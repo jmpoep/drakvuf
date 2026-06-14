@@ -117,6 +117,7 @@ struct memdump_config
     const char* memdump_dir;
     const char* dll_hooks_list;
     const char* clr_profile;
+    const char* clr_profile_64;
     const char* mscorwks_profile;
     const bool print_no_addr;
     const bool memdump_disable_free_vm;
@@ -140,7 +141,8 @@ public:
     size_t wow64context_eip_rva;
     size_t wow64context_eax_rva;
 
-    wanted_hooks_t wanted_hooks;
+    wanted_hooks_t wanted_hooks_32;
+    wanted_hooks_t wanted_hooks_64;
 
     memdump(drakvuf_t drakvuf, const memdump_config* config, output_format_t output);
     memdump(const memdump&) = delete;
@@ -149,12 +151,13 @@ public:
 
     virtual bool stop_impl() override;
 
+    void setup_usermode_dotnet_hooks(const memdump_config* c);
     void userhook_init(const memdump_config* c, output_format_t output);
     void userhook_destroy();
     bool userhooks_stop();
 
 private:
-    void setup_dotnet_hooks(const char* dll_name, const char* profile);
+    void setup_dotnet_hooks(const char* dll_name, const char* profile, bool is_32bit);
 };
 
 #endif
